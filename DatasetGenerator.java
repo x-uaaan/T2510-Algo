@@ -9,12 +9,16 @@ import java.util.Random;
 public class DatasetGenerator {
     public static void main(String[] args) {
         // Define the maximum value for the integers
-        final int MAX_VALUE = 1_000_000_000;
-        // Define the size of the dataset (adjust this to ensure sorting time differences)
-        final int DATASET_SIZE = 10_000_000; // Example size, adjust as needed
+        final int MAX_VALUE = 1_000_000_0;
+        // Define the size of the dataset 
+        //final int DATASET_SIZE = 1_000; // testing size 
+        final int DATASET_SIZE = 1_000_000_000; // production size
+        // Define string length range
+        final int MIN_STRING_LENGTH = 4;
+        final int MAX_STRING_LENGTH = 6;
 
         // Generate the dataset
-        List<Integer> dataset = generateDataset(DATASET_SIZE, MAX_VALUE);
+        List<DataEntry> dataset = generateDataset(DATASET_SIZE, MAX_VALUE, MIN_STRING_LENGTH, MAX_STRING_LENGTH);
 
         // Write the dataset to a file
         String outputFileName = "dataset.csv";
@@ -26,15 +30,43 @@ public class DatasetGenerator {
         }
     }
 
-    private static List<Integer> generateDataset(int size, int maxValue) {
-        List<Integer> dataset = new ArrayList<>(size);
-        Random random = new Random();
+    private static class DataEntry {
+        int number;
+        String text;
 
-        // Generate unique random integers
+        DataEntry(int number, String text) {
+            this.number = number;
+            this.text = text;
+        }
+    }
+
+    private static List<DataEntry> generateDataset(int size, int maxValue, int minStringLength, int maxStringLength) {
+        List<DataEntry> dataset = new ArrayList<>(size);
+        Random random = new Random();
+        String characters = "abcdefghijklmnopqrstuvwxyz";
+
+        // Generate unique random integers with corresponding strings
         while (dataset.size() < size) {
             int randomNumber = random.nextInt(maxValue) + 1; // Ensure positive numbers
-            if (!dataset.contains(randomNumber)) {
-                dataset.add(randomNumber);
+            
+            // Generate random string
+            int stringLength = random.nextInt(maxStringLength - minStringLength + 1) + minStringLength;
+            StringBuilder randomString = new StringBuilder();
+            for (int i = 0; i < stringLength; i++) {
+                randomString.append(characters.charAt(random.nextInt(characters.length())));
+            }
+
+            // Check if number is unique
+            boolean isUnique = true;
+            for (DataEntry entry : dataset) {
+                if (entry.number == randomNumber) {
+                    isUnique = false;
+                    break;
+                }
+            }
+
+            if (isUnique) {
+                dataset.add(new DataEntry(randomNumber, randomString.toString()));
             }
         }
 
@@ -43,13 +75,14 @@ public class DatasetGenerator {
         return dataset;
     }
 
-    private static void writeDatasetToFile(List<Integer> dataset, String fileName) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (int i = 0; i < dataset.size(); i++) {
-                writer.write(String.valueOf(dataset.get(i)));
-                if (i < dataset.size() - 1) {
-                    writer.write(","); // Add a comma between numbers
-                }
+    private static void writeDatasetToFile(List<DataEntry> dataset, String fileName) throws IOException {
+        // Create dataset directory if it doesn't exist
+        new java.io.File("dataset").mkdirs();
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("dataset/" + fileName))) {
+            for (DataEntry entry : dataset) {
+                writer.write(entry.number + "," + entry.text);
+                writer.newLine();
             }
         }
     }

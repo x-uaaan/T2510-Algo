@@ -8,7 +8,7 @@ public class mergesort {
 
     public static void main(String[] args) {
         // Import dataset from CSV file
-        int[] dataset = importData("dataset_int.csv");
+        int[] dataset = importData("dataset/dataset_int.csv");
 
         if (dataset == null) {
             System.out.println("Failed to load dataset.");
@@ -26,7 +26,7 @@ public class mergesort {
         long endTime = System.nanoTime();
 
         // Write sorted array to CSV file
-        writeToFile(sortedNumbers, "merge_sort_n.csv");
+        writeToFile(sortedNumbers, "mergesort/merge_sort_n.csv");
 
         // Print running time
         System.out.println("\nRunning Time: " + (endTime - startTime) + " nanoseconds");
@@ -38,18 +38,15 @@ public class mergesort {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-                for (String value : values) {
-                    try {
-                        // Trim the value and try to parse it as an integer
-                        String trimmedValue = value.trim();
-                        if (!trimmedValue.isEmpty()) {
-                            dataList.add(Integer.parseInt(trimmedValue));
-                        }
-                    } catch (NumberFormatException e) {
-                        // Skip invalid values
-                        System.out.println("Warning: Skipping invalid value: " + value);
+                try {
+                    // Trim the value and try to parse it as an integer
+                    String trimmedValue = line.trim();
+                    if (!trimmedValue.isEmpty()) {
+                        dataList.add(Integer.parseInt(trimmedValue));
                     }
+                } catch (NumberFormatException e) {
+                    // Skip invalid values
+                    System.out.println("Warning: Skipping invalid value: " + line);
                 }
             }
         } catch (IOException e) {
