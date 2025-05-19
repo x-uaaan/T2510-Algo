@@ -35,7 +35,7 @@ def main():
     # Define the maximum value for the integers
     MAX_VALUE = 1_000_000_000
     # Define the size of the dataset
-    DATASET_SIZE = 1_000  # Testing size
+    DATASET_SIZE = 1_000_000  # Testing size
     # Define string length range
     MIN_STRING_LENGTH = 4
     MAX_STRING_LENGTH = 6
@@ -44,7 +44,7 @@ def main():
     dataset = generate_dataset(DATASET_SIZE, MAX_VALUE, MIN_STRING_LENGTH, MAX_STRING_LENGTH)
 
     # Write the dataset to a file
-    output_file_name = "dataset.csv"
+    output_file_name = "dataset_py.csv"
     local_file_path = f"dataset/{output_file_name}"
     try:
         write_dataset_to_file(dataset, output_file_name)

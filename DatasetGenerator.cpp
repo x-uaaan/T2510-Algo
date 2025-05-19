@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <filesystem> // Updated to std::filesystem
-
-namespace fs = std::filesystem;
+#include <sys/stat.h> // For mkdir on POSIX/Windows
+#include <sys/types.h>
+#include <io.h>
 
 int main() {
     const int MAX_VALUE = 1000000000;
@@ -16,13 +16,14 @@ int main() {
     const int MAX_STRING_LENGTH = 6;
     const std::string CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
     const std::string DIR_NAME = "dataset";
-    const std::string FILE_NAME = "data.csv";
-
+    const std::string FILE_NAME = "dataset_cpp.csv";
+    
     // Create dataset directory if it doesn't exist
-    if (!fs::exists(DIR_NAME)) {
-        fs::create_directories(DIR_NAME);
-    }
-
+    #if defined(_WIN32)
+        _mkdir(DIR_NAME.c_str());
+    #else
+        mkdir(DIR_NAME.c_str(), 0777);
+    #endif
     std::unordered_set<int> unique_numbers;
     std::vector<std::pair<int, std::string>> dataset;
     dataset.reserve(DATASET_SIZE);
@@ -57,8 +58,8 @@ int main() {
         std::cerr << "Failed to open file for writing.\n";
         return 1;
     }
-    for (const auto& [num, str] : dataset) {
-        file << num << ',' << str << '\n';
+    for (const auto& pair : dataset) {
+        file << pair.first << ',' << pair.second << '\n';
     }
     file.close();
 
