@@ -3,7 +3,7 @@ import java.util.*;
 
 public class mergesort {
     public static void main(String[] args) throws IOException {
-        String inputFile = "dataset/dataset.csv";
+        String inputFile = "dataset/dataset_cpp.csv";
         String outputFile = "mergesort/mergesort_java.csv";
         String stepsFile = "mergesort/mergesort_java_step.txt";
 

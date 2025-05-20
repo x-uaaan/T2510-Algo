@@ -11,7 +11,7 @@
 
 int main() {
     const int MAX_VALUE = 1000000000;
-    const int DATASET_SIZE = 1000000;
+    const int DATASET_SIZE = 10000000;
     const int MIN_STRING_LENGTH = 4;
     const int MAX_STRING_LENGTH = 6;
     const std::string CHARACTERS = "abcdefghijklmnopqrstuvwxyz";

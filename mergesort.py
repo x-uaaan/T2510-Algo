@@ -74,7 +74,7 @@ def write_steps(file_path, steps):
 # Example usage
 if __name__ == "__main__":
     # Read data from dataset.csv
-    input_file = "dataset/dataset.csv"
+    input_file = "dataset/dataset_java.csv"
     output_file = "mergesort/mergesort_py.csv"
     steps_file = "mergesort/mergesort_py_step.txt"
     data = read_csv(input_file)

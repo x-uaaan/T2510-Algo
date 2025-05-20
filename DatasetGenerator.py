@@ -33,10 +33,9 @@ def write_dataset_to_file(dataset, file_name):
 
 def main():
     # Define the maximum value for the integers
-    MAX_VALUE = 1_000_000_000
-    # Define the size of the dataset
-    DATASET_SIZE = 1_000_000  # Testing size
-    # Define string length range
+    MAX_VALUE = 1_000_000_000 # integer value
+    DATASET_SIZE = 1_000_0000  # dataset size
+    # Define string length range 
     MIN_STRING_LENGTH = 4
     MAX_STRING_LENGTH = 6
 
