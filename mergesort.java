@@ -3,20 +3,51 @@ import java.util.*;
 
 public class mergesort {
     public static void main(String[] args) throws IOException {
-        String inputFile = "dataset/dataset_cpp.csv";
+        Scanner scanner = new Scanner(System.in);
+        String inputFile = "dataset/dataset_py.csv";
         String outputFile = "mergesort/mergesort_java.csv";
         String stepsFile = "mergesort/mergesort_java_step.txt";
 
         // Read data
         List<Pair> data = readCsv(inputFile);
+        int dataSize = data.size();
+
+        // User input for range selection
+        System.out.printf("Dataset size: %d rows\n", dataSize);
+        System.out.print("Run the whole dataset? (Y/N): ");
+        String choice = scanner.nextLine().trim();
+
+        List<Pair> selectedData;
+        if (choice.equalsIgnoreCase("Y")) {
+            selectedData = data;
+        } else {
+            int start = 0, end = 0;
+            while (true) {
+                try {
+                    System.out.print("Enter start row (1-based): ");
+                    start = Integer.parseInt(scanner.nextLine().trim());
+                    System.out.print("Enter end row (1-based): ");
+                    end = Integer.parseInt(scanner.nextLine().trim());
+                    if (start < 1 || end > dataSize || start > end) {
+                        System.out.println("Invalid range. Please try again.");
+                    } else {
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter numbers.");
+                }
+            }
+            // Sublist is 0-based and end-exclusive
+            selectedData = data.subList(start - 1, end);
+        }
 
         // Sort and record time
         List<List<Pair>> steps = new ArrayList<>();
         long startTime = System.nanoTime();
-        List<Pair> sorted = mergeSort(data, steps);
+        List<Pair> sorted = mergeSort(selectedData, steps);
         long endTime = System.nanoTime();
         double sortingTime = (endTime - startTime) / 1e9;
-        System.out.printf( "Sorting time (excluding reading and saving steps): %.6f seconds\n", sortingTime);
+        System.out.printf("Sorting time (excluding reading and saving steps): %.6f seconds\n", sortingTime);
 
         // Save sorted data
         writeCsv(outputFile, sorted);

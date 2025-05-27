@@ -6,7 +6,6 @@ import java.util.*;
 public class DatasetGenerator {
     private static final int MAX_VALUE = 1_000_000_000; // integer value
     private static final int DATASET_SIZE = 1_000; // dataset size
-    //private static final int DATASET_SIZE = 1_000_0000; // dataset size
     private static final int MIN_STRING_LENGTH = 4;
     private static final int MAX_STRING_LENGTH = 6;
 
@@ -16,23 +15,33 @@ public class DatasetGenerator {
         Set<Integer> uniqueNumbers = new HashSet<>();
         Random random = new Random();
 
-        while (dataset.size() < size) {
-            int randomNumber = random.nextInt(maxValue) + 1; // Ensure positive numbers
+        // Shuffle the dataset to ensure random order
+        Collections.shuffle(dataset);
+        return dataset;
+    }
 
-            // Generate random string
-            int stringLength = random.nextInt(maxStringLength - minStringLength + 1) + minStringLength;
-            StringBuilder randomString = new StringBuilder();
-            for (int i = 0; i < stringLength; i++) {
-                randomString.append(characters.charAt(random.nextInt(characters.length())));
-            }
+    public static List<Pair<Integer, String>> generateDatasetWithRanges(int totalSize, List<int[]> ranges, int minStringLength, int maxStringLength) {
+        List<Pair<Integer, String>> dataset = new ArrayList<>();
+        String characters = "abcdefghijklmnopqrstuvwxyz";
+        Random random = new Random();
+        int sizePerRange = totalSize / ranges.size();
 
-            // Check if number is unique
-            if (uniqueNumbers.add(randomNumber)) {
-                dataset.add(new Pair<>(randomNumber, randomString.toString()));
+        for (int[] range : ranges) {
+            int min = range[0];
+            int max = range[1];
+            Set<Integer> uniqueNumbers = new HashSet<>();
+            while (uniqueNumbers.size() < sizePerRange) {
+                int randomNumber = random.nextInt(max - min + 1) + min;
+                if (uniqueNumbers.add(randomNumber)) {
+                    int stringLength = random.nextInt(maxStringLength - minStringLength + 1) + minStringLength;
+                    StringBuilder randomString = new StringBuilder();
+                    for (int i = 0; i < stringLength; i++) {
+                        randomString.append(characters.charAt(random.nextInt(characters.length())));
+                    }
+                    dataset.add(new Pair<>(randomNumber, randomString.toString()));
+                }
             }
         }
-
-        // Shuffle the dataset to ensure random order
         Collections.shuffle(dataset);
         return dataset;
     }
@@ -53,11 +62,23 @@ public class DatasetGenerator {
 
     public static void main(String[] args) {
         try {
-            // Generate the dataset
-            List<Pair<Integer, String>> dataset = generateDataset(DATASET_SIZE, MAX_VALUE, MIN_STRING_LENGTH, MAX_STRING_LENGTH);
-
+            // Define the 10 ranges
+            List<int[]> ranges = Arrays.asList(
+                new int[]{0, 10},
+                new int[]{11, 100},
+                new int[]{101, 1000},
+                new int[]{1001, 10000},
+                new int[]{10001, 100000},
+                new int[]{100001, 1000000},
+                new int[]{1000001, 10000000},
+                new int[]{10000001, 100000000},
+                new int[]{100000001, 500000000},
+                new int[]{500000001, 1000000000}
+            );
+            // Generate the dataset with ranges
+            List<Pair<Integer, String>> dataset = generateDatasetWithRanges(DATASET_SIZE, ranges, MIN_STRING_LENGTH, MAX_STRING_LENGTH);
             // Write the dataset to a file
-            String outputFileName = "dataset_java.csv";
+            String outputFileName = "dataset_java_" + DATASET_SIZE + ".csv";
             String localFilePath = "dataset/" + outputFileName;
             writeDatasetToFile(dataset, outputFileName);
             System.out.println("Dataset generated and written to " + localFilePath);
@@ -84,4 +105,4 @@ public class DatasetGenerator {
             return second;
         }
     }
-} 
+}
