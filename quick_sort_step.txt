@@ -1,0 +1,6 @@
+When running will first be ask for starting & ending row num. The csv file name will be dataset_sample_1000 and will not be altered after running as the program will only output a txt file plus should be in the same folder as the program. The result will output into a file name quick_sort_step_startNum_endNum.txt into the same folder the program was ran in. The outputted text file will contain the initial subarray that is chosen for sorting then as the sorting begins, pivot chosen and what was swapped will be written until finally the sorted subarray.
+
+Files involved: 
+quick_sort_step.exe
+quick_sort_step.cpp
+quick_sort_step.java

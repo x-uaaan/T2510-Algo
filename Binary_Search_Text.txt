@@ -1,1 +1,6 @@
 When running will first be ask for csv file name(The file in the same folder as program and is sorted) and target integer, result will output into a file name binary_search_targetInteger.txt into the same folder the program was ran in.
+
+Files involved: 
+binary_search_step.cpp
+binary_search_step.exe
+binary_search_step.java
