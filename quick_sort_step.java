@@ -1,79 +1,114 @@
 import java.io.*;
-import java.util.*;
+import java.util.Scanner;
 
 public class quick_sort_step {
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        final String filename = "dataset_sample_1000.csv";
+    // Helper method to print the array to the output file
+    private static void printArray(int[] nums, String[] strs, int size, PrintWriter out) {
+        out.print("[");
+        for (int i = 0; i < size; i++) {
+            out.print(nums[i] + "/" + strs[i]);
+            if (i != size - 1) out.print(", ");
+        }
+        out.println("]");
+    }
 
-        // User input
+    // Partition function for quicksort
+    private static int partition(int[] nums, String[] strs, int low, int high, PrintWriter out) {
+        int pivot = nums[high];         // Choose last element as pivot
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (nums[j] < pivot) {
+                i++;
+                // Swap both number and string together
+                int tempNum = nums[i];
+                nums[i] = nums[j];
+                nums[j] = tempNum;
+
+                String tempStr = strs[i];
+                strs[i] = strs[j];
+                strs[j] = tempStr;
+            }
+        }
+
+        // Place pivot in correct position
+        int tempNum = nums[i + 1];
+        nums[i + 1] = nums[high];
+        nums[high] = tempNum;
+
+        String tempStr = strs[i + 1];
+        strs[i + 1] = strs[high];
+        strs[high] = tempStr;
+
+        int pivotIndex = i + 1;
+        // Output the current pivot index and array after partition
+        out.print("pi=" + pivotIndex + " ");
+        printArray(nums, strs, nums.length, out);
+        return pivotIndex;
+    }
+
+    // Recursive quicksort algorithm
+    private static void quickSort(int[] nums, String[] strs, int low, int high, PrintWriter out) {
+        if (low < high) {
+            int pi = partition(nums, strs, low, high, out);
+            quickSort(nums, strs, low, pi - 1, out);   // Sort left partition
+            quickSort(nums, strs, pi + 1, high, out);  // Sort right partition
+        }
+    }
+
+    public static void main(String[] args) {
+        String filename = "dataset_sample_1000.csv"; // Dataset filename is fixed
+        Scanner scanner = new Scanner(System.in);
+
+        // Prompt user for start and end rows
         System.out.print("Enter start row: ");
         int startRow = scanner.nextInt();
-
         System.out.print("Enter end row: ");
         int endRow = scanner.nextInt();
 
-        List<Integer> sublist = new ArrayList<>();
+        int size = endRow - startRow + 1;
+        if (size <= 0) {
+            System.err.println("Invalid row range.");
+            return;
+        }
 
-        // Read CSV and extract only relevant rows (integers)
-        // Using list instead of array because it is a flexible container that adjust dynamically 
+        int[] nums = new int[size];          // Array for integers
+        String[] strs = new String[size];    // Array for strings
+
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             int row = 1;
+            int index = 0;
+
+            // Read only lines within the requested range
             while ((line = reader.readLine()) != null) {
                 if (row >= startRow && row <= endRow) {
                     String[] parts = line.split(",");
-                    sublist.add(Integer.parseInt(parts[0].trim()));
+                    nums[index] = Integer.parseInt(parts[0].trim());
+                    strs[index] = parts[1].trim();
+                    index++;
                 }
                 row++;
             }
         } catch (IOException e) {
-            System.out.println("Error reading file: " + filename);
+            System.err.println("Error reading file.");
             return;
         }
 
-        // Prepare output file and running the quicksort algorithm
-        String outputFilename = "quick_sort_step_" + startRow + "_" + endRow + ".txt";
-        try (PrintWriter writer = new PrintWriter(new FileWriter(outputFilename))) {
-            writer.println("Initial subarray: " + sublist);
-            quickSort(sublist, 0, sublist.size() - 1, writer);
-            writer.println("Sorted subarray: " + sublist);
+        String outFilename = "quick_sort_step_" + startRow + "_" + endRow + ".txt";
+
+        try (PrintWriter out = new PrintWriter(new FileWriter(outFilename))) {
+            // Print initial array
+            printArray(nums, strs, size, out);
+
+            // Perform quicksort
+            quickSort(nums, strs, 0, size - 1, out);
+
         } catch (IOException e) {
-            System.out.println("Error writing to output file.");
+            System.err.println("Error writing output file.");
         }
 
-        System.out.println("Sorting complete. Output written to " + outputFilename);
-    }
-
-    // Quicksort algorithm
-    private static void quickSort(List<Integer> arr, int low, int high, PrintWriter writer) {
-        if (low < high) {
-            // Partition the array and get the pivot's final position
-            int pivotIndex = partition(arr, low, high, writer);
-            quickSort(arr, low, pivotIndex - 1, writer);
-            quickSort(arr, pivotIndex + 1, high, writer);
-        }
-    }
-
-    // The partition function to make the quicksort work
-    private static int partition(List<Integer> arr, int low, int high, PrintWriter writer) {
-        int pivot = arr.get(high);
-        writer.println("Pivot chosen: " + pivot);
-        int i = low - 1;
-
-        for (int j = low; j < high; j++) {
-            if (arr.get(j) < pivot) {
-                i++;
-                Collections.swap(arr, i, j);
-                writer.println("Swapped " + arr.get(j) + " with " + arr.get(i));
-                writer.println("Current array: " + arr);
-            }
-        }
-
-        Collections.swap(arr, i + 1, high);
-        writer.println("Swapped pivot " + pivot + " to index " + (i + 1));
-        writer.println("Current array: " + arr);
-        return i + 1;
+        System.out.println("Sorting complete. Output written to " + outFilename);
     }
 }

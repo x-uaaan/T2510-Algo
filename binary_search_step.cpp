@@ -1,62 +1,69 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <string>
 #include <sstream>
 
+using namespace std;
+
+const int MAX_SIZE = 1000; // adjust based on dataset size
+
 int main() {
-    std::string filename;
+    string filename;
     int target;
 
     // Get user input
-    std::cout << "Enter dataset filename: ";
-    std::getline(std::cin, filename);
+    cout << "Enter dataset filename: ";
+    getline(cin, filename);
 
-    std::cout << "Enter target integer: ";
-    std::cin >> target;
+    cout << "Enter target integer: ";
+    cin >> target;
 
-    std::vector<int> data;
-
-    // Read CSV file
-    std::ifstream infile(filename);
+    // Open CSV file
+    ifstream infile(filename);
     if (!infile) {
-        std::cerr << "Error: Cannot open file " << filename << "\n";
+        cerr << "Error: Cannot open file " << filename << "\n";
         return 1;
     }
 
-    std::string line;
-    while (std::getline(infile, line)) {
+    int nums[MAX_SIZE];
+    string strs[MAX_SIZE];
+    int size = 0;
+    string line;
+
+    // Read from CSV into arrays
+    while (getline(infile, line) && size < MAX_SIZE) {
         if (!line.empty()) {
-            std::stringstream ss(line);
-            std::string num_str;
-            std::getline(ss, num_str, ','); // Get the integer part
-            int number = std::stoi(num_str);
-            data.push_back(number);
+            stringstream ss(line);
+            string numPart, strPart;
+            getline(ss, numPart, ',');
+            getline(ss, strPart);
+            nums[size] = stoi(numPart);
+            strs[size] = strPart;
+            ++size;
         }
     }
+    infile.close();
 
-    // Output txt file
-    std::string out_filename = "binary_search_step_" + std::to_string(target) + ".txt";
-    std::ofstream outfile(out_filename);
-
+    // Output file setup
+    string outFile = "binary_search_step_" + to_string(target) + ".txt";
+    ofstream outfile(outFile);
     if (!outfile) {
-        std::cerr << "Error: Cannot write to file " << out_filename << "\n";
+        cerr << "Error: Cannot write to file " << outFile << "\n";
         return 1;
     }
 
-    // Binary Search Algo
-    int left = 0, right = data.size() - 1;
+    // Binary search
+    int left = 0, right = size - 1;
     bool found = false;
 
     while (left <= right) {
         int mid = left + (right - left) / 2;
-        outfile << "Compared value: " << data[mid] << " at row: " << (mid + 1) << "\n";
+        outfile << (mid + 1) << ": " << nums[mid] << "/" << strs[mid] << "\n";
 
-        if (data[mid] == target) {
-            outfile << "Target found at row: " << (mid + 1) << "\n";
+        if (nums[mid] == target) {
             found = true;
             break;
-        } else if (data[mid] < target) {
+        } else if (nums[mid] < target) {
             left = mid + 1;
         } else {
             right = mid - 1;
@@ -64,9 +71,9 @@ int main() {
     }
 
     if (!found) {
-        outfile << "Target not found\n";
+        outfile << "-1\n";
     }
 
-    std::cout << "Search complete. Output written to: " << out_filename << "\n";
+    cout << "Search complete. Output written to: " << outFile << "\n";
     return 0;
 }
