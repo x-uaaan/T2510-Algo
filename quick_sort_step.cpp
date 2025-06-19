@@ -1,105 +1,110 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
+#include <iostream>      
+#include <fstream>       
+#include <string>        
+using namespace std;
 
-// Using vector instead of array because it is a flexible container that adjust dynamically 
-// Helper function to print the vector to the output file in readable format
-void printVector(const std::vector<int>& arr, std::ofstream& out) {
+// Structure to hold int/string pair
+struct Value {
+    int number;
+    string text;
+};
+
+// Function to print the contents of an array to output file
+void printArray(Value arr[], int size, ofstream& out) {
     out << "[";
-    for (size_t i = 0; i < arr.size(); i++) {
-        out << arr[i];
-        if (i != arr.size() - 1) out << ", ";
+    for (int i = 0; i < size; ++i) {
+        out << arr[i].number << "/" << arr[i].text;
+        if (i != size - 1) out << ", ";
     }
     out << "]\n";
 }
 
-// The function to help quicksort happen
-int partition(std::vector<int>& arr, int low, int high, std::ofstream& out) {
-    int pivot = arr[high];
-    out << "Pivot chosen: " << pivot << "\n";
+// Partition function for quicksort
+int partition(Value arr[], int low, int high, ofstream& out) {
+    Value pivot = arr[high]; // Pivot element is the last element
     int i = low - 1;
 
-    for (int j = low; j < high; j++) {
-        if (arr[j] < pivot) {
-            i++;
-            std::swap(arr[i], arr[j]);
-            out << "Swapped " << arr[j] << " with " << arr[i] << "\n";
-            out << "Current array: ";
-            printVector(arr, out);
+    for (int j = low; j < high; ++j) {
+        if (arr[j].number < pivot.number) {
+            ++i;
+            swap(arr[i], arr[j]);
         }
     }
 
-    std::swap(arr[i + 1], arr[high]);
-    out << "Swapped pivot " << pivot << " to index " << (i + 1) << "\n";
-    out << "Current array: ";
-    printVector(arr, out);
-    return i + 1;
+    swap(arr[i + 1], arr[high]); // Place pivot in the correct position
+    out << "pi=" << (i + 1) << " ";
+    printArray(arr, high + 1, out);  
+
+    return i + 1; // Return pivot index
 }
 
-// The quicksort algorithm
-void quickSort(std::vector<int>& arr, int low, int high, std::ofstream& out) {
+// Recursive quicksort algorithm
+void quickSort(Value arr[], int low, int high, ofstream& out) {
     if (low < high) {
-        int pi = partition(arr, low, high, out);
-        quickSort(arr, low, pi - 1, out);
-        quickSort(arr, pi + 1, high, out);
+        int pi = partition(arr, low, high, out); // Partition the array
+        quickSort(arr, low, pi - 1, out);        // Recursively sort left partition
+        quickSort(arr, pi + 1, high, out);       // Recursively sort right partition
     }
 }
 
 int main() {
-    // Opening the dataset and user input
-    std::string filename = "dataset_sample_1000.csv";
+    string filename = "dataset_sample_1000.csv"; // Dataset filename is fixed
     int startRow, endRow;
 
-    std::cout << "Enter start row: ";
-    std::cin >> startRow;
+    // Ask user for start and end row
+    cout << "Enter start row: ";
+    cin >> startRow;
+    cout << "Enter end row: ";
+    cin >> endRow;
 
-    std::cout << "Enter end row: ";
-    std::cin >> endRow;
-
-    std::ifstream infile(filename);
-    if (!infile.is_open()) {
-        std::cerr << "Error opening file.\n";
+    // Calculate number of elements to sort
+    int size = endRow - startRow + 1;
+    if (size <= 0) {
+        cerr << "Invalid row range.\n";
         return 1;
     }
 
-    std::vector<int> values;
-    std::string line;
-    int row = 1;
-
-    // Reading the dataset and extracting the row the user specified
-    while (std::getline(infile, line)) {
-        if (row >= startRow && row <= endRow) {
-            std::stringstream ss(line);
-            std::string num;
-            std::getline(ss, num, ',');
-            values.push_back(std::stoi(num));
-        }
-        row++;
+    Value* values = new Value[size];
+    ifstream infile(filename);
+    if (!infile.is_open()) {
+        cerr << "Error opening file.\n";
+        delete[] values;
+        return 1;
     }
 
+    string line;
+    int row = 1, index = 0;
+
+    // Read CSV file line by line
+    while (getline(infile, line)) {
+        if (row >= startRow && row <= endRow) {
+            size_t commaPos = line.find(',');
+            if (commaPos != string::npos) {
+                string numStr = line.substr(0, commaPos);
+                string txtStr = line.substr(commaPos + 1);
+                values[index].number = stoi(numStr);
+                values[index].text = txtStr;
+                ++index;
+            }
+        }
+        ++row;
+    }
     infile.close();
 
-    // Creating the output file
-    std::string outFile = "quick_sort_step_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".txt";
-    std::ofstream out(outFile);
+    // Open output file
+    string outFile = "quick_sort_step_" + to_string(startRow) + "_" + to_string(endRow) + ".txt";
+    ofstream out(outFile);
     if (!out.is_open()) {
-        std::cerr << "Error writing to file.\n";
+        cerr << "Error writing to file.\n";
+        delete[] values;
         return 1;
     }
 
-    // Output initial unsorted array
-    out << "Initial subarray: ";
-    printVector(values, out);
+    printArray(values, size, out); // Initial array print
 
-    // Running the quicksort and logging it
-    quickSort(values, 0, values.size() - 1, out);
+    quickSort(values, 0, size - 1, out); // Perform quicksort on the extracted subarray
 
-    // Output sorted array
-    out << "Sorted subarray: ";
-    printVector(values, out);
-
-    std::cout << "Sorting complete. Output written to " << outFile << "\n";
+    delete[] values; 
+    cout << "Sorting complete. Output written to " << outFile << "\n";
     return 0;
 }
