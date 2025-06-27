@@ -1,5 +1,4 @@
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,11 +36,6 @@ public class DatasetGenerator {
     }
 
     public static void generateDataset(long total, String outputPath) throws IOException {
-        // Ensure /dataset directory exists
-        File datasetDir = new File("dataset");
-        if (!datasetDir.exists()) {
-            datasetDir.mkdirs();
-        }
         Random rand = new Random();
         ArrayList<String> rows = new ArrayList<>();
         for (int i = 0; i < RANGES.length; i++) {
