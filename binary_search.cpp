@@ -10,6 +10,9 @@
 #include <cstdio>
 
 #ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #include <io.h>
 #else
@@ -46,7 +49,7 @@ std::vector<std::string> getCsvFiles() {
     
 #ifdef _WIN32
     WIN32_FIND_DATA findFileData;
-    HANDLE hFind = FindFirstFile("dataset\\*.csv", &findFileData);
+    HANDLE hFind = FindFirstFile("*.csv", &findFileData);
     
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
@@ -55,7 +58,7 @@ std::vector<std::string> getCsvFiles() {
         FindClose(hFind);
     }
 #else
-    DIR* dir = opendir("dataset");
+    DIR* dir = opendir(".");
     if (dir != NULL) {
         struct dirent* entry;
         while ((entry = readdir(dir)) != NULL) {
@@ -76,11 +79,11 @@ int main() {
     std::vector<std::string> csvFiles = getCsvFiles();
     
     if (csvFiles.empty()) {
-        std::cout << "No .csv files found in /dataset directory." << std::endl;
+        std::cout << "No .csv files found." << std::endl;
         return 1;
     }
     
-    std::cout << "Available CSV files in /dataset:" << std::endl;
+    std::cout << "Available CSV files in current directory:" << std::endl;
     for (size_t i = 0; i < csvFiles.size(); i++) {
         std::cout << (i + 1) << ": " << csvFiles[i] << std::endl;
     }
@@ -96,7 +99,7 @@ int main() {
         }
     }
     
-    std::string filename = "dataset/" + csvFiles[fileChoice - 1];
+    std::string filename = csvFiles[fileChoice - 1];
     
     std::cout << "Enter target number to search: ";
     int target;
@@ -127,7 +130,7 @@ int main() {
     int count = numData.size();
     
     // Run best, average and worst case
-    double bestTime = std::numeric_limits<double>::max();
+    double bestTime = (std::numeric_limits<double>::max)();
     double averageTime = 0.0;
     double worstTime = 0.0;
     double totalTime = 0.0;
@@ -144,13 +147,13 @@ int main() {
             bestTime = time;
         }
         
-        bestTime = std::min(bestTime, time);
-        worstTime = std::max(worstTime, time);
+        bestTime = (std::min)(bestTime, time);
+        worstTime = (std::max)(worstTime, time);
     }
     averageTime = totalTime / count;
     
     // Prepare output file for steps
-    std::string stepsOutput = "dataset/binary_search_step_" + std::to_string(count) + "_" + std::to_string(target) + ".txt";
+    std::string stepsOutput = "binary_search_step_" + std::to_string(count) + "_" + std::to_string(target) + ".txt";
     std::vector<std::string> stepLogs;
     
     int low = 0, high = count - 1, foundIndex = -1;

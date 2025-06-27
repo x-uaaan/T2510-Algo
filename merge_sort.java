@@ -4,7 +4,7 @@ import java.util.*;
 public class merge_sort {
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        String inputFile = "dataset/dataset.csv";
+        String inputFile = "dataset.csv";
         int startRow = 1, endRow = 0;
         // Read data
         List<Pair> data = readCsv(inputFile);
@@ -33,8 +33,8 @@ public class merge_sort {
         selectedData = data.subList(startRow - 1, endRow);
 
         // Prepare output filenames
-        String outputFile = String.format("dataset/merge_sort_java_%d_%d.csv", startRow, endRow);
-        String stepsFile = String.format("dataset/merge_sort_java_steps_%d_%d.txt", startRow, endRow);
+        String outputFile = String.format("Java/merge_sort_%d_%d.csv", startRow, endRow);
+        String stepsFile = String.format("Java/merge_sort_steps_%d_%d.txt", startRow, endRow);
 
         // Sort and record time
         List<List<Pair>> steps = new ArrayList<>();

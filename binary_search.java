@@ -28,13 +28,13 @@ public class binary_search{
         Scanner scanner = new Scanner(System.in);
 
         // List all .csv files in /dataset
-        File datasetDir = new File("dataset");
+        File datasetDir = new File("Java");
         File[] csvFiles = datasetDir.listFiles((dir, name) -> name.endsWith(".csv"));
         if (csvFiles == null || csvFiles.length == 0) {
-            System.out.println("No .csv files found in /dataset directory.");
+            System.out.println("No .csv files found.");
             return;
         }
-        System.out.println("Available CSV files in /dataset:");
+        System.out.println("Available CSV files in /Java:");
         for (int i = 0; i < csvFiles.length; i++) {
             System.out.printf("%d: %s\n", i + 1, csvFiles[i].getName());
         }
@@ -47,7 +47,7 @@ public class binary_search{
                 fileChoice = -1;
             }
         }
-        String filename = "dataset/" + csvFiles[fileChoice - 1].getName();
+        String filename = csvFiles[fileChoice - 1].getName();
 
         System.out.print("Enter target number to search: ");
         int target = Integer.parseInt(scanner.nextLine().trim());
@@ -100,7 +100,7 @@ public class binary_search{
         averageTime = totalTime / count;
 
         // Prepare output file for steps
-        String stepsOutput = String.format("dataset/binary_search_step_%d_%d.txt", count, target);
+        String stepsOutput = String.format("Java/binary_search_step_%d_%d.txt", count, target);
         List<String> stepLogs = new ArrayList<>();
 
         int low = 0, high = count - 1, foundIndex = -1;

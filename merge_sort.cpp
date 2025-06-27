@@ -92,7 +92,7 @@ private:
 };
 
 int main() {
-    std::string inputFile = "dataset/dataset.csv";
+    std::string inputFile = "../dataset.csv";
     int startRow = 1, endRow = 0;
     
     // Read data
@@ -126,8 +126,8 @@ int main() {
     selectedData = std::vector<Pair>(data.begin() + startRow - 1, data.begin() + endRow);
     
     // Prepare output filenames
-    std::string outputFile = "dataset/merge_sort_cpp_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".csv";
-    std::string stepsFile = "dataset/merge_sort_cpp_steps_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".txt";
+    std::string outputFile = "merge_sort_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".csv";
+    std::string stepsFile = "merge_sort_steps_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".txt";
     
     // Sort and record time
     std::vector<std::vector<Pair>> steps;

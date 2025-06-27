@@ -27,7 +27,7 @@ public class DatasetGenerator {
 
     public static void main(String[] args) throws IOException {
         long total = 1000_000L; // limit dataset to xxx rows
-        String outputPath = "dataset/dataset.csv";
+        String outputPath = "dataset.csv";
         //String outputPath = "dataset/dataset_" + total + ".csv";
         generateDataset(total, outputPath);
         System.out.println("\n--------------------------------");
