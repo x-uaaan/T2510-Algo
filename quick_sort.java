@@ -12,33 +12,25 @@ public class quick_sort {
 
         // User input for range selection
         System.out.printf("Dataset size: %d rows\n", dataSize);
-        System.out.print("Run the whole dataset? (Y/N): ");
-        String choice = scanner.nextLine().trim();
-
+        
         List<Pair> selectedData;
-        if (choice.equalsIgnoreCase("Y")) {
-            selectedData = data;
-            startRow = 1;
-            endRow = dataSize;
-        } else {
-            while (true) {
-                try {
-                    System.out.print("Enter start row (1-based): ");
-                    startRow = Integer.parseInt(scanner.nextLine().trim());
-                    System.out.print("Enter end row (1-based): ");
-                    endRow = Integer.parseInt(scanner.nextLine().trim());
-                    if (startRow < 1 || endRow > dataSize || startRow > endRow) {
-                        System.out.println("Invalid range. Please try again.");
-                    } else {
-                        break;
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter numbers.");
+        while (true) {
+            try {
+                System.out.print("Enter start row (1-based): ");
+                startRow = Integer.parseInt(scanner.nextLine().trim());
+                System.out.print("Enter end row (1-based): ");
+                endRow = Integer.parseInt(scanner.nextLine().trim());
+                if (startRow < 1 || endRow > dataSize || startRow > endRow) {
+                    System.out.println("Invalid range. Please try again.");
+                } else {
+                    break;
                 }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter numbers.");
             }
-            // Sublist is 0-based and end-exclusive
-            selectedData = data.subList(startRow - 1, endRow);
         }
+        // Sublist is 0-based and end-exclusive
+        selectedData = data.subList(startRow - 1, endRow);
 
         // Prepare output filenames
         String outputFile = String.format("dataset/quick_sort_java_%d_%d.csv", startRow, endRow);
@@ -52,6 +44,8 @@ public class quick_sort {
         inPlaceQuickSort(selectedData, 0, selectedData.size() - 1, steps);
         long endTime = System.nanoTime();
         double sortingTime = (endTime - startTime) / 1e9;
+
+        System.out.println("\n--------------------------------");
         System.out.printf("Sorting time (excluding reading and saving steps): %.6f seconds\n", sortingTime);
 
         // Save sorted data
@@ -61,6 +55,7 @@ public class quick_sort {
         // Save steps
         writeSteps(stepsFile, steps);
         System.out.printf("Quick sort steps saved to %s%n", stepsFile);
+        System.out.println("--------------------------------");
     }
 
     static class Pair {

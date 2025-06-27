@@ -130,14 +130,11 @@ public class binary_search{
                 writer.write(log);
                 writer.newLine();
             }
-            writer.newLine();
-            writer.write(String.format("Best case time: %.9f seconds\n", bestTime));
-            writer.write(String.format("Average case time: %.9f seconds\n", averageTime));
-            writer.write(String.format("Worst case time: %.9f seconds\n", worstTime));
         } catch (IOException e) {
             System.out.println("Error writing steps file.");
         }
-        System.out.printf("Binary search steps and timing saved to %s\n", stepsOutput);
+        System.out.println("\n--------------------------------");
+        System.out.printf("Binary search steps saved to %s\n", stepsOutput);
 
         // Print result
         if (foundIndex != -1) {
@@ -146,5 +143,12 @@ public class binary_search{
             System.out.println("Target not found");
         }
         System.out.printf("Search time: %.8f seconds\n", searchTime);
+        
+        // Display time complexity results
+        System.out.println("\nTime Complexity Analysis:");
+        System.out.printf("Best case time: %.9f seconds\n", bestTime);
+        System.out.printf("Average case time: %.9f seconds\n", averageTime);
+        System.out.printf("Worst case time: %.9f seconds\n", worstTime);
+        System.out.println("--------------------------------");
     }
 }

@@ -1,4 +1,5 @@
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,13 +26,22 @@ public class DatasetGenerator {
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
 
     public static void main(String[] args) throws IOException {
-        long total = 1000_000L; // limit dataset to 1000 rows
+        long total = 1000_000L; // limit dataset to xxx rows
         String outputPath = "dataset/dataset.csv";
         //String outputPath = "dataset/dataset_" + total + ".csv";
         generateDataset(total, outputPath);
+        System.out.println("\n--------------------------------");
+        System.out.println("Dataset generated successfully! File created: " + outputPath);
+        System.out.println("Total rows: " + total);
+        System.out.println("--------------------------------");
     }
 
     public static void generateDataset(long total, String outputPath) throws IOException {
+        // Ensure /dataset directory exists
+        File datasetDir = new File("dataset");
+        if (!datasetDir.exists()) {
+            datasetDir.mkdirs();
+        }
         Random rand = new Random();
         ArrayList<String> rows = new ArrayList<>();
         for (int i = 0; i < RANGES.length; i++) {

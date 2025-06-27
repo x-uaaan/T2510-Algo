@@ -17,7 +17,7 @@ struct Pair {
     }
 };
 
-class MergeSort {
+class QuickSort {
 public:
     static std::vector<Pair> readCsv(const std::string& filePath) {
         std::vector<Pair> data;
@@ -58,36 +58,30 @@ public:
         file.close();
     }
     
-    static void inPlaceMergeSort(std::vector<Pair>& arr, int left, int right, std::vector<std::vector<Pair>>& steps) {
-        if (left >= right) return;
-        int mid = left + (right - left) / 2;
-        inPlaceMergeSort(arr, left, mid, steps);
-        inPlaceMergeSort(arr, mid + 1, right, steps);
-        mergeWithSteps(arr, left, mid, right, steps);
+    static void inPlaceQuickSort(std::vector<Pair>& arr, int low, int high, std::vector<std::vector<Pair>>& steps) {
+        if (low < high) {
+            int pi = partition(arr, low, high, steps);
+            inPlaceQuickSort(arr, low, pi - 1, steps);
+            inPlaceQuickSort(arr, pi + 1, high, steps);
+        }
     }
     
 private:
-    static void mergeWithSteps(std::vector<Pair>& arr, int left, int mid, int right, std::vector<std::vector<Pair>>& steps) {
-        std::vector<Pair> temp;
-        int i = left, j = mid + 1;
+    static int partition(std::vector<Pair>& arr, int low, int high, std::vector<std::vector<Pair>>& steps) {
+        Pair pivot = arr[high];
+        int i = low - 1;
         
-        while (i <= mid && j <= right) {
-            if (arr[i].number <= arr[j].number) {
-                temp.push_back(arr[i++]);
-            } else {
-                temp.push_back(arr[j++]);
+        for (int j = low; j < high; j++) {
+            if (arr[j].number <= pivot.number) {
+                i++;
+                std::swap(arr[i], arr[j]);
             }
         }
+        std::swap(arr[i + 1], arr[high]);
         
-        while (i <= mid) temp.push_back(arr[i++]);
-        while (j <= right) temp.push_back(arr[j++]);
-        
-        for (size_t k = 0; k < temp.size(); k++) {
-            arr[left + k] = temp[k];
-        }
-        
-        // Record the current state after each merge
+        // Record the current state after each partition
         steps.push_back(arr);
+        return i + 1;
     }
 };
 
@@ -96,7 +90,7 @@ int main() {
     int startRow = 1, endRow = 0;
     
     // Read data
-    std::vector<Pair> data = MergeSort::readCsv(inputFile);
+    std::vector<Pair> data = QuickSort::readCsv(inputFile);
     int dataSize = data.size();
     
     // User input for range selection
@@ -126,8 +120,8 @@ int main() {
     selectedData = std::vector<Pair>(data.begin() + startRow - 1, data.begin() + endRow);
     
     // Prepare output filenames
-    std::string outputFile = "dataset/merge_sort_cpp_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".csv";
-    std::string stepsFile = "dataset/merge_sort_cpp_steps_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".txt";
+    std::string outputFile = "dataset/quick_sort_cpp_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".csv";
+    std::string stepsFile = "dataset/quick_sort_cpp_steps_" + std::to_string(startRow) + "_" + std::to_string(endRow) + ".txt";
     
     // Sort and record time
     std::vector<std::vector<Pair>> steps;
@@ -135,7 +129,7 @@ int main() {
     steps.push_back(selectedData);
     
     auto startTime = std::chrono::high_resolution_clock::now();
-    MergeSort::inPlaceMergeSort(selectedData, 0, selectedData.size() - 1, steps);
+    QuickSort::inPlaceQuickSort(selectedData, 0, selectedData.size() - 1, steps);
     auto endTime = std::chrono::high_resolution_clock::now();
     
     double sortingTime = std::chrono::duration<double>(endTime - startTime).count();
@@ -144,13 +138,12 @@ int main() {
     std::cout << "Sorting time (excluding reading and saving steps): " << std::fixed << sortingTime << " seconds" << std::endl;
     
     // Save sorted data
-    MergeSort::writeCsv(outputFile, selectedData);
+    QuickSort::writeCsv(outputFile, selectedData);
     std::cout << "Sorted data saved to " << outputFile << std::endl;
     
     // Save steps
-    MergeSort::writeSteps(stepsFile, steps);
-    std::cout << "Merge sort steps saved to " << stepsFile << std::endl;
+    QuickSort::writeSteps(stepsFile, steps);
+    std::cout << "Quick sort steps saved to " << stepsFile << std::endl;
     std::cout << "--------------------------------" << std::endl;
-    
     return 0;
 } 
