@@ -47,7 +47,7 @@ public class binary_search{
                 fileChoice = -1;
             }
         }
-        String filename = csvFiles[fileChoice - 1].getName();
+        String filename = csvFiles[fileChoice - 1].getPath();
 
         System.out.print("Enter target number to search: ");
         int target = Integer.parseInt(scanner.nextLine().trim());

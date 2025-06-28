@@ -8,6 +8,7 @@
 #include <limits>
 #include <cstdlib>
 #include <cstdio>
+#include <regex>
 
 #ifdef _WIN32
 #ifndef NOMINMAX
@@ -46,31 +47,30 @@ public:
 
 std::vector<std::string> getCsvFiles() {
     std::vector<std::string> csvFiles;
-    
+    std::string dirPath = ".";
 #ifdef _WIN32
     WIN32_FIND_DATA findFileData;
-    HANDLE hFind = FindFirstFile("*.csv", &findFileData);
-    
+    HANDLE hFind = FindFirstFile((dirPath + "\\merge_sort_*.csv").c_str(), &findFileData);
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
-            csvFiles.push_back(findFileData.cFileName);
+            csvFiles.push_back(dirPath + "\\" + findFileData.cFileName);
         } while (FindNextFile(hFind, &findFileData) != 0);
         FindClose(hFind);
     }
 #else
-    DIR* dir = opendir(".");
+    DIR* dir = opendir(dirPath.c_str());
     if (dir != NULL) {
         struct dirent* entry;
+        std::regex pattern("^merge_sort_.*\\.csv$");
         while ((entry = readdir(dir)) != NULL) {
             std::string filename = entry->d_name;
-            if (filename.size() > 4 && filename.substr(filename.size() - 4) == ".csv") {
-                csvFiles.push_back(filename);
+            if (std::regex_match(filename, pattern)) {
+                csvFiles.push_back(dirPath + "/" + filename);
             }
         }
         closedir(dir);
     }
 #endif
-    
     return csvFiles;
 }
 
