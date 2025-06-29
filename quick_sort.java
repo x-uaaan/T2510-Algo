@@ -3,45 +3,41 @@ import java.util.*;
 
 public class quick_sort {
     public static void main(String[] args) throws IOException {
+        // List all .csv files in the current directory
+        File dir = new File(".");
+        File[] csvFiles = dir.listFiles((d, name) -> name.endsWith(".csv"));
+        if (csvFiles == null || csvFiles.length == 0) {
+            System.out.println("No .csv files found in the current directory.");
+            return;
+        }
+        System.out.println("Available CSV files:");
+        for (int i = 0; i < csvFiles.length; i++) {
+            System.out.printf("%d: %s\n", i + 1, csvFiles[i].getName());
+        }
+        int fileChoice = -1;
         Scanner scanner = new Scanner(System.in);
-        String inputFile = "dataset.csv";
-        int startRow = 1, endRow = 0;
+        while (fileChoice < 1 || fileChoice > csvFiles.length) {
+            System.out.print("Select a file by number: ");
+            try {
+                fileChoice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                fileChoice = -1;
+            }
+        }
+        String inputFile = csvFiles[fileChoice - 1].getName();
         // Read data
         List<Pair> data = readCsv(inputFile);
         int dataSize = data.size();
 
-        // User input for range selection
-        System.out.printf("Dataset size: %d rows\n", dataSize);
-        
-        List<Pair> selectedData;
-        while (true) {
-            try {
-                System.out.print("Enter start row (1-based): ");
-                startRow = Integer.parseInt(scanner.nextLine().trim());
-                System.out.print("Enter end row (1-based): ");
-                endRow = Integer.parseInt(scanner.nextLine().trim());
-                if (startRow < 1 || endRow > dataSize || startRow > endRow) {
-                    System.out.println("Invalid range. Please try again.");
-                } else {
-                    break;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter numbers.");
-            }
-        }
-        // Sublist is 0-based and end-exclusive
-        selectedData = data.subList(startRow - 1, endRow);
+        // Always use the full dataset
+        List<Pair> selectedData = data;
 
-        // Prepare output filenames
-        String outputFile = String.format("Java/quick_sort_%d_%d.csv", startRow, endRow);
-        String stepsFile = String.format("Java/quick_sort_steps_%d_%d.txt", startRow, endRow);
+        // Prepare output filename
+        String outputFile = String.format("Java/quick_sort_%d.csv", dataSize);
 
         // Sort and record time
-        List<List<Pair>> steps = new ArrayList<>();
-        // Record initial state
-        steps.add(new ArrayList<>(selectedData));
         long startTime = System.nanoTime();
-        inPlaceQuickSort(selectedData, 0, selectedData.size() - 1, steps);
+        inPlaceQuickSort(selectedData, 0, selectedData.size() - 1);
         long endTime = System.nanoTime();
         double sortingTime = (endTime - startTime) / 1e9;
 
@@ -51,10 +47,6 @@ public class quick_sort {
         // Save sorted data
         writeCsv(outputFile, selectedData);
         System.out.printf("Sorted data saved to %s%n", outputFile);
-
-        // Save steps
-        writeSteps(stepsFile, steps);
-        System.out.printf("Quick sort steps saved to %s%n", stepsFile);
         System.out.println("--------------------------------");
     }
 
@@ -95,25 +87,16 @@ public class quick_sort {
         }
     }
 
-    static void writeSteps(String filePath, List<List<Pair>> steps) throws IOException {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
-            for (List<Pair> step : steps) {
-                bw.write(step.toString());
-                bw.newLine();
-            }
-        }
-    }
-
-    // In-place quick sort with step recording
-    static void inPlaceQuickSort(List<Pair> arr, int low, int high, List<List<Pair>> steps) {
+    // In-place quick sort without step recording
+    static void inPlaceQuickSort(List<Pair> arr, int low, int high) {
         if (low < high) {
-            int pi = partition(arr, low, high, steps);
-            inPlaceQuickSort(arr, low, pi - 1, steps);
-            inPlaceQuickSort(arr, pi + 1, high, steps);
+            int pi = partition(arr, low, high);
+            inPlaceQuickSort(arr, low, pi - 1);
+            inPlaceQuickSort(arr, pi + 1, high);
         }
     }
 
-    static int partition(List<Pair> arr, int low, int high, List<List<Pair>> steps) {
+    static int partition(List<Pair> arr, int low, int high) {
         Pair pivot = arr.get(high);
         int i = low - 1;
         for (int j = low; j < high; j++) {
@@ -123,8 +106,6 @@ public class quick_sort {
             }
         }
         Collections.swap(arr, i + 1, high);
-        // Record the current state after each partition
-        steps.add(new ArrayList<>(arr));
         return i + 1;
     }
 } 

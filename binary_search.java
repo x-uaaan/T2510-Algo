@@ -25,9 +25,7 @@ public class binary_search{
     }
 
     public static void main(String[] args){
-        Scanner scanner = new Scanner(System.in);
-
-        // List all .csv files in /dataset
+        // List all .csv files in /Java
         File datasetDir = new File("Java");
         File[] csvFiles = datasetDir.listFiles((dir, name) -> name.endsWith(".csv"));
         if (csvFiles == null || csvFiles.length == 0) {
@@ -39,6 +37,7 @@ public class binary_search{
             System.out.printf("%d: %s\n", i + 1, csvFiles[i].getName());
         }
         int fileChoice = -1;
+        Scanner scanner = new Scanner(System.in);
         while (fileChoice < 1 || fileChoice > csvFiles.length) {
             System.out.print("Select a file by number: ");
             try {
@@ -49,12 +48,7 @@ public class binary_search{
         }
         String filename = csvFiles[fileChoice - 1].getPath();
 
-        System.out.print("Enter target number to search: ");
-        int target = Integer.parseInt(scanner.nextLine().trim());
-
         List<Integer> numData = new ArrayList<>();
-        List<String> textData = new ArrayList<>();
-
         // Read file to put data
         try (BufferedReader readFile = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -63,11 +57,6 @@ public class binary_search{
                 if (parts.length >= 1) {
                     int num = Integer.parseInt(parts[0]);
                     numData.add(num);
-                    if (parts.length == 2) {
-                        textData.add(parts[1].trim());
-                    } else {
-                        textData.add("");
-                    }
                 }
             }
         } catch(IOException e){
@@ -90,65 +79,25 @@ public class binary_search{
             time = (System.nanoTime() - start) / 1e9;
             totalTime += time;
 
-            if(bestTime <= 0 && i == 0){
-                bestTime = time;
-            }
-
             bestTime = Math.min(bestTime, time);
             worstTime = Math.max(worstTime, time);
         }
         averageTime = totalTime / count;
 
-        // Prepare output file for steps
-        String stepsOutput = String.format("Java/binary_search_step_%d_%d.txt", count, target);
-        List<String> stepLogs = new ArrayList<>();
-
-        int low = 0, high = count - 1, foundIndex = -1;
-        long startTime = System.nanoTime();
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            // Print the step as index: number/text
-            stepLogs.add(mid + ": " + numData.get(mid) + "/" + textData.get(mid));
-            if (numData.get(mid) == target) {
-                foundIndex = mid;
-                break;
-            } else if (numData.get(mid) < target) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-        if (foundIndex == -1) {
-            stepLogs.add("-1");
-        }
-        long endTime = System.nanoTime();
-        double searchTime = (endTime - startTime) / 1e9;
-
-        // Save steps and timing to file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(stepsOutput))) {
-            for (String log : stepLogs) {
-                writer.write(log);
-                writer.newLine();
-            }
+        // Output running times to file
+        String timingOutput = String.format("Java/binary_search_%d.txt", count);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(timingOutput))) {
+            writer.write(String.format("Best case time: %.9f seconds\n", bestTime));
+            writer.write(String.format("Average case time: %.9f seconds\n", averageTime));
+            writer.write(String.format("Worst case time: %.9f seconds\n", worstTime));
         } catch (IOException e) {
-            System.out.println("Error writing steps file.");
+            System.out.println("Error writing timing file.");
         }
         System.out.println("\n--------------------------------");
-        System.out.printf("Binary search steps saved to %s\n", stepsOutput);
-
-        // Print result
-        if (foundIndex != -1) {
-            System.out.println("Target found at index: " + foundIndex);
-        } else {
-            System.out.println("Target not found");
-        }
-        System.out.printf("Search time: %.8f seconds\n", searchTime);
-        
-        // Display time complexity results
-        System.out.println("\nTime Complexity Analysis:");
-        System.out.printf("Best case time: %.9f seconds\n", bestTime);
-        System.out.printf("Average case time: %.9f seconds\n", averageTime);
-        System.out.printf("Worst case time: %.9f seconds\n", worstTime);
+        System.out.printf("Binary search running times saved to %s\n", timingOutput);
+        System.out.println("Best case time: " + bestTime + " seconds");
+        System.out.println("Average case time: " + averageTime + " seconds");
+        System.out.println("Worst case time: " + worstTime + " seconds");
         System.out.println("--------------------------------");
     }
 }
